@@ -1,0 +1,191 @@
+{
+  "info": {
+    "name": "User API",
+    "description": "REST API for managing users with dynamic age calculation. Built with GoFiber, PostgreSQL (Supabase), SQLC, Uber Zap and go-playground/validator.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Create User",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Alice\",\n  \"dob\": \"1990-05-10\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/users",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["users"]
+        },
+        "description": "Creates a new user. Returns id, name, dob. Age is NOT returned on create."
+      }
+    },
+    {
+      "name": "Get User by ID",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "http://localhost:3000/users/1",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["users", "1"]
+        },
+        "description": "Returns user with dynamically calculated age. Age is computed at runtime using Go's time package."
+      }
+    },
+    {
+      "name": "Update User",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Alice Updated\",\n  \"dob\": \"1991-03-15\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/users/1",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["users", "1"]
+        },
+        "description": "Updates name and dob for a user. Returns updated data without age."
+      }
+    },
+    {
+      "name": "Delete User",
+      "request": {
+        "method": "DELETE",
+        "url": {
+          "raw": "http://localhost:3000/users/1",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["users", "1"]
+        },
+        "description": "Deletes a user. Returns 204 No Content with empty body."
+      }
+    },
+    {
+      "name": "List All Users",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "http://localhost:3000/users",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["users"]
+        },
+        "description": "Returns all users with dynamically calculated age for each."
+      }
+    },
+    {
+      "name": "List Users - Paginated",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "http://localhost:3000/users?page=1&limit=2",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["users"],
+          "query": [
+            { "key": "page", "value": "1" },
+            { "key": "limit", "value": "2" }
+          ]
+        },
+        "description": "Returns paginated users. Supports page and limit query params."
+      }
+    },
+    {
+      "name": "Validation - Missing Name",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"dob\": \"1990-05-10\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/users",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["users"]
+        },
+        "description": "Should return 400 - name is required."
+      }
+    },
+    {
+      "name": "Validation - Future DOB",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Test\",\n  \"dob\": \"2099-01-01\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/users",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["users"]
+        },
+        "description": "Should return 400 - dob cannot be in the future."
+      }
+    },
+    {
+      "name": "Validation - Wrong Date Format",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Test\",\n  \"dob\": \"10-05-1990\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/users",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["users"]
+        },
+        "description": "Should return 400 - use YYYY-MM-DD format."
+      }
+    },
+    {
+      "name": "Error - User Not Found",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "http://localhost:3000/users/99999",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["users", "99999"]
+        },
+        "description": "Should return 404 - user not found."
+      }
+    },
+    {
+      "name": "Error - Invalid ID",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "http://localhost:3000/users/abc",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["users", "abc"]
+        },
+        "description": "Should return 400 - invalid user id."
+      }
+    }
+  ]
+}
