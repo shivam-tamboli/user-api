@@ -1,13 +1,11 @@
 package routes
 
 import (
+	"user-api/docs"
 	"user-api/internal/handler"
 	"user-api/internal/middleware"
 
-	_ "user-api/docs"
-
 	"github.com/gofiber/fiber/v2"
-	"github.com/swaggo/swag"
 )
 
 func Setup(app *fiber.App, userHandler *handler.UserHandler) {
@@ -15,12 +13,8 @@ func Setup(app *fiber.App, userHandler *handler.UserHandler) {
 	app.Use(middleware.RequestLogger())
 
 	app.Get("/swagger/doc.json", func(c *fiber.Ctx) error {
-		doc, err := swag.ReadDoc()
-		if err != nil {
-			return c.Status(500).SendString("swagger doc not found")
-		}
 		c.Set("Content-Type", "application/json")
-		return c.SendString(doc)
+		return c.Send(docs.SwaggerJSON)
 	})
 
 	app.Get("/swagger", func(c *fiber.Ctx) error {
