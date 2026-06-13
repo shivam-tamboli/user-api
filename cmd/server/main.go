@@ -10,7 +10,6 @@ import (
 	"context"
 	"log"
 	"user-api/config"
-	_ "user-api/docs"
 	"user-api/internal/handler"
 	"user-api/internal/logger"
 	"user-api/internal/repository"
