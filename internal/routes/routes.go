@@ -12,6 +12,10 @@ func Setup(app *fiber.App, userHandler *handler.UserHandler) {
 	app.Use(middleware.RequestID())
 	app.Use(middleware.RequestLogger())
 
+	app.Get("/favicon.ico", func(c *fiber.Ctx) error {
+		return c.SendStatus(fiber.StatusNoContent)
+	})
+
 	app.Get("/swagger/doc.json", func(c *fiber.Ctx) error {
 		c.Set("Content-Type", "application/json")
 		return c.Send(docs.SwaggerJSON)

@@ -8,6 +8,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"log"
 	"user-api/config"
 	"user-api/internal/handler"
@@ -51,7 +52,12 @@ func main() {
 
 	app := fiber.New(fiber.Config{
 		ErrorHandler: func(c *fiber.Ctx, err error) error {
-			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+			code := fiber.StatusInternalServerError
+			var e *fiber.Error
+			if errors.As(err, &e) {
+				code = e.Code
+			}
+			return c.Status(code).JSON(fiber.Map{"error": err.Error()})
 		},
 	})
 
