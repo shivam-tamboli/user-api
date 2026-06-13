@@ -62,6 +62,7 @@ definitions:
       name:
         type: string
     type: object
+host: user-api-v0ko.onrender.com
 info:
   contact: {}
   description: A RESTful API to manage users with dynamic age calculation.

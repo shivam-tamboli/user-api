@@ -4,6 +4,17 @@ A RESTful API built with Go to manage users with their name and date of birth. T
 
 ---
 
+## Live Demo
+
+| | URL |
+|---|---|
+| **API Base URL** | https://user-api-v0ko.onrender.com |
+| **Swagger Docs** | https://user-api-v0ko.onrender.com/swagger/index.html |
+
+> Hosted on Render. First request may take ~30 seconds if the service is sleeping (free tier).
+
+---
+
 ## Tech Stack
 
 | Tool | Purpose |
@@ -13,8 +24,9 @@ A RESTful API built with Go to manage users with their name and date of birth. T
 | SQLC | Type-safe SQL code generation |
 | Uber Zap | Structured production logging |
 | go-playground/validator | Request input validation |
-| Swagger | API documentation |
+| Swagger | Interactive API documentation |
 | Docker | Containerization |
+| Render | Cloud deployment |
 
 ---
 
@@ -39,7 +51,7 @@ A RESTful API built with Go to manage users with their name and date of birth. T
 
 ---
 
-## Getting Started
+## Getting Started Locally
 
 ### Prerequisites
 
@@ -66,7 +78,7 @@ DATABASE_URL=postgresql://postgres:your_password@your_host:5432/postgres
 PORT=3000
 ```
 
-> If you are on an IPv4-only network (most home/office networks), use the **Session Pooler** connection string from your Supabase dashboard under **Project Settings → Database → Connection string**.
+> If you are on an IPv4-only network, use the **Session Pooler** connection string from your Supabase dashboard under **Project Settings → Database → Connection string**.
 
 ### 3. Install dependencies
 
@@ -82,19 +94,17 @@ go run ./cmd/server
 
 Server starts at `http://localhost:3000`
 
-The `users` table is created automatically on first run — no manual migration step needed.
+The `users` table is created automatically on first run — no manual migration needed.
 
 ---
 
 ## API Documentation (Swagger)
 
-Once the server is running, open your browser and go to:
+**Live:** https://user-api-v0ko.onrender.com/swagger/index.html
 
-```
-http://localhost:3000/swagger/index.html
-```
+**Local:** http://localhost:3000/swagger/index.html
 
-You can view and test all endpoints interactively from the browser.
+Open in browser to view and test all endpoints interactively.
 
 ---
 
@@ -135,7 +145,7 @@ Response `200`:
 }
 ```
 
-> Age is calculated dynamically — not stored in the database.
+> Age is calculated dynamically using Go's `time` package — never stored in the database.
 
 ---
 
@@ -171,8 +181,7 @@ Response: `204 No Content`
 ### List All Users
 **GET** `/users`
 
-Supports pagination via query parameters:
-
+Supports pagination:
 ```
 GET /users?page=1&limit=10
 ```
@@ -199,10 +208,10 @@ Response `200`:
 
 ## Input Validation
 
-All inputs are validated using `go-playground/validator`. The API returns `400 Bad Request` for:
+All inputs are validated using `go-playground/validator`. Returns `400 Bad Request` for:
 
 - Missing `name` or `dob` fields
-- Date of birth set in the future
+- Date of birth in the future
 - Incorrect date format (must be `YYYY-MM-DD`)
 
 ---
@@ -216,13 +225,13 @@ Every request is logged using **Uber Zap** in structured JSON format:
 {"level":"info","msg":"request completed","method":"POST","path":"/users","status":201,"duration":0.13,"requestId":"uuid"}
 ```
 
-Each response also includes a unique `X-Request-Id` header injected by middleware.
+Each response also includes a unique `X-Request-Id` header.
 
 ---
 
 ## Testing with Postman
 
-Import the collection from the `postman/` folder into Postman to test all endpoints in one click:
+Import the Postman collection to test all endpoints instantly:
 
 ```
 postman/user-api.postman_collection.json
@@ -236,7 +245,7 @@ postman/user-api.postman_collection.json
 go test ./...
 ```
 
-Unit tests cover the age calculation logic with three cases:
+Covers age calculation with three cases:
 - Birthday already passed this year
 - Birthday not yet this year
 - Birthday is today
@@ -244,8 +253,6 @@ Unit tests cover the age calculation logic with three cases:
 ---
 
 ## Docker
-
-Build and run the app using Docker:
 
 ```bash
 docker build -t user-api .
