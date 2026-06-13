@@ -9,7 +9,7 @@ A RESTful API built with Go to manage users with their name and date of birth. T
 | | URL |
 |---|---|
 | **API Base URL** | https://user-api-v0ko.onrender.com |
-| **Swagger Docs** | https://user-api-v0ko.onrender.com/swagger/index.html |
+| **Swagger Docs** | https://user-api-v0ko.onrender.com/swagger |
 
 > Hosted on Render. First request may take ~30 seconds if the service is sleeping (free tier).
 
@@ -100,9 +100,9 @@ The `users` table is created automatically on first run — no manual migration 
 
 ## API Documentation (Swagger)
 
-**Live:** https://user-api-v0ko.onrender.com/swagger/index.html
+**Live:** https://user-api-v0ko.onrender.com/swagger
 
-**Local:** http://localhost:3000/swagger/index.html
+**Local:** http://localhost:3000/swagger
 
 Open in browser to view and test all endpoints interactively.
 
@@ -206,6 +206,19 @@ Response `200`:
 
 ---
 
+## HTTP Status Codes
+
+| Code | Meaning | When |
+|------|---------|------|
+| `201` | Created | User successfully created |
+| `200` | OK | User fetched or updated |
+| `204` | No Content | User successfully deleted |
+| `400` | Bad Request | Invalid input or bad ID format |
+| `404` | Not Found | User does not exist |
+| `500` | Internal Server Error | Unexpected server error |
+
+---
+
 ## Input Validation
 
 All inputs are validated using `go-playground/validator`. Returns `400 Bad Request` for:
@@ -216,16 +229,42 @@ All inputs are validated using `go-playground/validator`. Returns `400 Bad Reque
 
 ---
 
-## Logging
+## Middleware
 
-Every request is logged using **Uber Zap** in structured JSON format:
+Two middleware functions are applied globally to every request:
 
-```json
-{"level":"info","msg":"user created","id":1}
-{"level":"info","msg":"request completed","method":"POST","path":"/users","status":201,"duration":0.13,"requestId":"uuid"}
+### 1. Request ID
+Generates a unique UUID for every request and injects it as a response header:
+```
+X-Request-Id: 9991d37f-21b2-4868-8062-d83d239a2fc2
 ```
 
-Each response also includes a unique `X-Request-Id` header.
+### 2. Request Logger
+Logs every request with method, path, status code and duration using Uber Zap:
+```json
+{
+  "level": "info",
+  "msg": "request completed",
+  "requestId": "9991d37f-21b2-4868-8062-d83d239a2fc2",
+  "method": "POST",
+  "path": "/users",
+  "status": 201,
+  "duration": 0.13
+}
+```
+
+---
+
+## Logging
+
+All key actions are logged using **Uber Zap** in structured JSON format:
+
+```json
+{"level":"info","msg":"creating user","name":"Alice","dob":"1990-05-10"}
+{"level":"info","msg":"user created","id":1}
+{"level":"warn","msg":"user not found","id":99999}
+{"level":"error","msg":"failed to create user","error":"..."}
+```
 
 ---
 
