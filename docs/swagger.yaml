@@ -62,7 +62,6 @@ definitions:
       name:
         type: string
     type: object
-host: localhost:3000
 info:
   contact: {}
   description: A RESTful API to manage users with dynamic age calculation.
