@@ -5,11 +5,14 @@ import (
 	"user-api/internal/middleware"
 
 	"github.com/gofiber/fiber/v2"
+	fiberSwagger "github.com/gofiber/swagger"
 )
 
 func Setup(app *fiber.App, userHandler *handler.UserHandler) {
 	app.Use(middleware.RequestID())
 	app.Use(middleware.RequestLogger())
+
+	app.Get("/swagger/*", fiberSwagger.HandlerDefault)
 
 	users := app.Group("/users")
 	users.Post("/", userHandler.CreateUser)

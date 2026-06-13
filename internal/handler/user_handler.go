@@ -23,6 +23,16 @@ func NewUserHandler(svc *service.UserService) *UserHandler {
 	}
 }
 
+// CreateUser godoc
+// @Summary      Create a new user
+// @Description  Create a user with name and date of birth
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Param        user  body      models.CreateUserRequest  true  "User data"
+// @Success      201   {object}  models.UserResponse
+// @Failure      400   {object}  models.ErrorResponse
+// @Router       /users [post]
 func (h *UserHandler) CreateUser(c *fiber.Ctx) error {
 	var req models.CreateUserRequest
 	if err := c.BodyParser(&req); err != nil {
@@ -45,6 +55,16 @@ func (h *UserHandler) CreateUser(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusCreated).JSON(user)
 }
 
+// GetUserByID godoc
+// @Summary      Get user by ID
+// @Description  Returns user details including dynamically calculated age
+// @Tags         users
+// @Produce      json
+// @Param        id   path      int  true  "User ID"
+// @Success      200  {object}  models.UserWithAgeResponse
+// @Failure      400  {object}  models.ErrorResponse
+// @Failure      404  {object}  models.ErrorResponse
+// @Router       /users/{id} [get]
 func (h *UserHandler) GetUserByID(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(c.Params("id"))
 	if err != nil || id < 1 {
@@ -62,6 +82,18 @@ func (h *UserHandler) GetUserByID(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(user)
 }
 
+// UpdateUser godoc
+// @Summary      Update a user
+// @Description  Update user name and date of birth
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Param        id    path      int                       true  "User ID"
+// @Param        user  body      models.UpdateUserRequest  true  "Updated user data"
+// @Success      200   {object}  models.UserResponse
+// @Failure      400   {object}  models.ErrorResponse
+// @Failure      404   {object}  models.ErrorResponse
+// @Router       /users/{id} [put]
 func (h *UserHandler) UpdateUser(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(c.Params("id"))
 	if err != nil || id < 1 {
@@ -89,6 +121,15 @@ func (h *UserHandler) UpdateUser(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(user)
 }
 
+// DeleteUser godoc
+// @Summary      Delete a user
+// @Description  Delete a user by ID
+// @Tags         users
+// @Param        id   path  int  true  "User ID"
+// @Success      204
+// @Failure      400  {object}  models.ErrorResponse
+// @Failure      404  {object}  models.ErrorResponse
+// @Router       /users/{id} [delete]
 func (h *UserHandler) DeleteUser(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(c.Params("id"))
 	if err != nil || id < 1 {
@@ -106,6 +147,16 @@ func (h *UserHandler) DeleteUser(c *fiber.Ctx) error {
 	return c.SendStatus(fiber.StatusNoContent)
 }
 
+// ListUsers godoc
+// @Summary      List all users
+// @Description  Returns paginated list of all users with dynamically calculated age
+// @Tags         users
+// @Produce      json
+// @Param        page   query     int  false  "Page number (default 1)"
+// @Param        limit  query     int  false  "Items per page (default 10)"
+// @Success      200    {object}  models.PaginatedUsersResponse
+// @Failure      500    {object}  models.ErrorResponse
+// @Router       /users [get]
 func (h *UserHandler) ListUsers(c *fiber.Ctx) error {
 	page, _ := strconv.Atoi(c.Query("page", "1"))
 	limit, _ := strconv.Atoi(c.Query("limit", "10"))
